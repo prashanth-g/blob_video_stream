@@ -8,9 +8,7 @@
 <script>
     var video = document.querySelector('video');
 
-    var assetURL = 'frag_bunny.mp4';
-    // Need to be specific for Blink regarding codecs
-    // ./mp4info frag_bunny.mp4 | grep Codec
+    var assetURL = 'bunny.mp4';
     var mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
     var totalSegments = 5;
     var segmentLength = 0;
@@ -23,7 +21,6 @@
     var mediaSource = null;
     if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
         mediaSource = new MediaSource;
-        //console.log(mediaSource.readyState); // closed
         video.src = URL.createObjectURL(mediaSource);
         mediaSource.addEventListener('sourceopen', sourceOpen);
     } else {
@@ -35,9 +32,7 @@
         sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
         getFileLength(assetURL, function (fileLength) {
             console.log((fileLength / 1024 / 1024).toFixed(2), 'MB');
-            //totalLength = fileLength;
             segmentLength = Math.round(fileLength / totalSegments);
-            //console.log(totalLength, segmentLength);
             fetchRange(assetURL, 0, segmentLength, appendSegment);
             requestedSegments[0] = true;
             video.addEventListener('timeupdate', checkBuffer);
@@ -86,7 +81,6 @@
             console.log('time to fetch next chunk', video.currentTime);
             fetchRange(assetURL, bytesFetched, bytesFetched + segmentLength, appendSegment);
         }
-        //console.log(video.currentTime, currentSegment, segmentDuration);
     };
 
     function seek (e) {
